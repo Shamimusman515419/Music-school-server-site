@@ -24,7 +24,7 @@ const verifyJWT = (req, res, next) => {
   })
 }
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.VITE_USER}:${process.env.VITE_PASS}@cluster0.jt15atw.mongodb.net/?retryWrites=true&w=majority`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -46,6 +46,7 @@ async function run() {
 
     const ClassesCollection = client.db("MusicSchool").collection("classes");
     const UsersCollection = client.db("MusicSchool").collection("users");
+    const CardsCollection = client.db("MusicSchool").collection("cards");
     // Send a ping to confirm a successful connection
     app.post('/jwt', (req, res) => {
       const user = req.body;
@@ -66,6 +67,26 @@ async function run() {
         return res.send({ message: 'user already exists' })
       }
       const result = await UsersCollection.insertOne(body);
+      res.send(result)
+    })
+
+    // cards related aip 
+    app.post('/cards', verifyJWT, async (req, res) => {
+      const body = req.body;
+      const result = await CardsCollection.insertOne(body);
+      res.send(result)
+    })
+
+    app.get('/cards', verifyJWT, async (req, res) => {
+      const query = { email: req.query.email }
+      const result = await CardsCollection.find(query).toArray();
+      res.send(result)
+    })
+    app.get('/cards/:id', verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+
+      const result = await CardsCollection.find(query).toArray();
       res.send(result)
     })
 
