@@ -1,7 +1,7 @@
 var express = require('express')
 var cors = require('cors')
 var app = express()
-const jwt=require('jsonwebtoken')
+const jwt = require('jsonwebtoken')
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 app.use(cors());
@@ -36,7 +36,7 @@ const client = new MongoClient(uri, {
   }
 });
 
- 
+
 
 async function run() {
   try {
@@ -45,6 +45,7 @@ async function run() {
     await client.connect();
 
     const ClassesCollection = client.db("MusicSchool").collection("classes");
+    const UsersCollection = client.db("MusicSchool").collection("users");
     // Send a ping to confirm a successful connection
     app.post('/jwt', (req, res) => {
       const user = req.body;
@@ -53,7 +54,22 @@ async function run() {
       res.send({ token })
     })
 
+    //  user relates api 
 
+
+    app.post('/users', async (req, res) => {
+      const body = req.body;
+      const query = { email: body.email }
+      const existingUser = await UsersCollection.findOne(query);
+
+      if (existingUser) {
+        return res.send({ message: 'user already exists' })
+      }
+      const result = await UsersCollection.insertOne(body);
+      res.send(result)
+    })
+
+    // classes 
     app.get('/classes', verifyJWT, async (req, res) => {
       const result = await ClassesCollection.find().toArray();
       // console.log(result);
