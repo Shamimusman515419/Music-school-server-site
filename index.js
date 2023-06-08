@@ -82,11 +82,11 @@ async function run() {
       const result = await CardsCollection.find(query).toArray();
       res.send(result)
     })
-    app.get('/cards/:id', verifyJWT, async (req, res) => {
+    app.delete('/cards/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
 
-      const result = await CardsCollection.find(query).toArray();
+      const result = await CardsCollection.deleteOne(query)
       res.send(result)
     })
 
