@@ -78,17 +78,53 @@ async function run() {
       const result = { admin: user?.role === 'admin' }
       res.send(result);
     })
-    app.get('/users/instructor/:email', async (req, res) => {
+    app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
-     console.log(email);
       const query = { email: email }
       const user = await UsersCollection.findOne(query);
       const result = { Instructor: user?.role === 'instructor' }
-      console.log(result);
+
       res.send(result);
     })
 
+    app.delete('/users/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await UsersCollection.deleteOne(query);
+      res.send(result);
+    })
+    app.patch('/users/admin/:id', verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: 'admin'
+        },
+      };
 
+      const result = await UsersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
+    })
+
+    app.patch('/users/instructor/:id', verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: 'instructor'
+        },
+      };
+      const result = await UsersCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
+    })
+
+
+    app.get('/users', verifyJWT, async (req, res) => {
+      const result = await UsersCollection.find().toArray();
+      res.send(result)
+    })
 
     app.post('/users', async (req, res) => {
       const body = req.body;
@@ -160,6 +196,8 @@ async function run() {
       res.send(result);
     })
 
+
+
     app.get('/paymentHistory', verifyJWT, async (req, res) => {
       const query = { email: req.query.email };
       const result = await PaymentCollection.find(query).toArray()
@@ -167,12 +205,26 @@ async function run() {
     })
 
     // classes 
+
     app.get('/classes', async (req, res) => {
       const result = await ClassesCollection.find().toArray();
-      // console.log(result);
       res.send(result)
-
     })
+
+    app.post('/classes', verifyJWT, async (req, res) => {
+      const body = req.body;
+      const result = await ClassesCollection.insertOne(body);
+      res.send(result)
+    })
+
+    app.get('/classes/:email', verifyJWT, async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+
+      const result = await ClassesCollection.find(query).toArray();
+      res.send(result)
+    })
+
     app.get('/instractor', async (req, res) => {
       const result = await InstractorCollection.find().toArray();
       // console.log(result);
