@@ -14,7 +14,7 @@ const verifyJWT = (req, res, next) => {
   if (!authorization) {
     return res.status(401).send({ error: true, message: 'unauthorized access' });
   }
-// bearer token
+  // bearer token
   const token = authorization.split(' ')[1];
 
   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
@@ -76,6 +76,15 @@ async function run() {
       const query = { email: email }
       const user = await UsersCollection.findOne(query);
       const result = { admin: user?.role === 'admin' }
+      res.send(result);
+    })
+    app.get('/users/instructor/:email', async (req, res) => {
+      const email = req.params.email;
+     console.log(email);
+      const query = { email: email }
+      const user = await UsersCollection.findOne(query);
+      const result = { Instructor: user?.role === 'instructor' }
+      console.log(result);
       res.send(result);
     })
 
