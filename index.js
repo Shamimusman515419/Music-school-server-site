@@ -188,6 +188,13 @@ async function run() {
       res.send(result)
     })
 
+    app.get('/order-stats',verifyJWT, async (req, res) => {
+    const result = await PaymentCollection.find().toArray()
+      res.send(result)
+
+    })
+
+
     app.delete('/payment/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
