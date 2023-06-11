@@ -121,6 +121,8 @@ async function run() {
     })
 
 
+
+
     app.get('/users', verifyJWT, async (req, res) => {
       const result = await UsersCollection.find().toArray();
       res.send(result)
@@ -138,10 +140,7 @@ async function run() {
       res.send(result)
     })
 
-    // app.get('/users', async (req, res) => {
-    //   const email =
-    // })
-    // cards related aip 
+
     app.post('/cards', verifyJWT, async (req, res) => {
       const body = req.body;
       const result = await CardsCollection.insertOne(body);
@@ -225,6 +224,34 @@ async function run() {
       res.send(result)
     })
 
+
+    app.patch('/classes/approved/:id', verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: 'approved'
+        },
+      };
+      const result = await ClassesCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
+    })
+    app.patch('/classes/denied/:id', verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          role: 'denied'
+        },
+      };
+      const result = await ClassesCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
+    })
+
+
+    // instractor 
     app.get('/instractor', async (req, res) => {
       const result = await InstractorCollection.find().toArray();
       // console.log(result);
