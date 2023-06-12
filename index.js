@@ -188,11 +188,40 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/order-stats', verifyJWT, async (req, res) => {
-      const result = await PaymentCollection.find().toArray()
-      res.send(result)
+    // app.get('/order-stats', verifyJWT, async (req, res) => {
+    //   const pipeline = [
+    //     {
+    //       $lookup: {
+    //         from: 'menu',
+    //         localField: 'menuItems',
+    //         foreignField: '_id',
+    //         as: 'menuItemsData'
+    //       }
+    //     },
+    //     {
+    //       $unwind: '$menuItemsData'
+    //     },
+    //     {
+    //       $group: {
+    //         _id: '$menuItemsData.category',
+    //         count: { $sum: 1 },
+    //         total: { $sum: '$menuItemsData.price' }
+    //       }
+    //     },
+    //     {
+    //       $project: {
+    //         category: '$_id',
+    //         count: 1,
+    //         total: { $round: ['$total', 2] },
+    //         _id: 0
+    //       }
+    //     }
+    //   ];
 
-    })
+    //   const result = await PaymentCollection.aggregate(pipeline).toArray();
+    //   res.send(result)
+
+    // })
 
 
     app.delete('/payment/:id', verifyJWT, async (req, res) => {
@@ -226,9 +255,9 @@ async function run() {
     app.get('/classes/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
-      
+
       const result = await ClassesCollection.find(query).toArray();
-      
+
       res.send(result)
     })
 
@@ -267,6 +296,16 @@ async function run() {
 
     })
 
+    // addmin stated aip 
+    app.get('/adminstate', verifyJWT, async (req, res) => {
+
+      const users = await UsersCollection.estimatedDocumentCount();
+      const classes = await ClassesCollection.estimatedDocumentCount();
+      const instructor = await InstractorCollection.estimatedDocumentCount();
+      const payments = await PaymentCollection.find().toArray();
+      res.send({ users, classes, instructor, payments })
+
+    })
 
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
