@@ -188,8 +188,8 @@ async function run() {
       res.send(result)
     })
 
-    app.get('/order-stats',verifyJWT, async (req, res) => {
-    const result = await PaymentCollection.find().toArray()
+    app.get('/order-stats', verifyJWT, async (req, res) => {
+      const result = await PaymentCollection.find().toArray()
       res.send(result)
 
     })
@@ -226,8 +226,9 @@ async function run() {
     app.get('/classes/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       const query = { email: email };
-
+      
       const result = await ClassesCollection.find(query).toArray();
+      
       res.send(result)
     })
 
