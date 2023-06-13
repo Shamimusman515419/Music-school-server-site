@@ -244,6 +244,7 @@ async function run() {
       res.send(result);
 
     })
+
     app.patch('/classes/denied/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -253,6 +254,29 @@ async function run() {
         },
       };
       const result = await ClassesCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
+    })
+
+    app.patch('/classes/feedback/:id', verifyJWT, async (req, res) => {
+      const id = req.params.id;
+      const body=req.body;
+      console.log(body);
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          feedback: body.feedback
+        },
+      };
+      const result = await ClassesCollection.updateOne(filter, updateDoc);
+      res.send(result);
+
+    })
+    
+    app.get('/classes/feedback/:id', async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const result = await ClassesCollection.findOne(filter);
       res.send(result);
 
     })
