@@ -188,40 +188,7 @@ async function run() {
       res.send(result)
     })
 
-    // app.get('/order-stats', verifyJWT, async (req, res) => {
-    //   const pipeline = [
-    //     {
-    //       $lookup: {
-    //         from: 'menu',
-    //         localField: 'menuItems',
-    //         foreignField: '_id',
-    //         as: 'menuItemsData'
-    //       }
-    //     },
-    //     {
-    //       $unwind: '$menuItemsData'
-    //     },
-    //     {
-    //       $group: {
-    //         _id: '$menuItemsData.category',
-    //         count: { $sum: 1 },
-    //         total: { $sum: '$menuItemsData.price' }
-    //       }
-    //     },
-    //     {
-    //       $project: {
-    //         category: '$_id',
-    //         count: 1,
-    //         total: { $round: ['$total', 2] },
-    //         _id: 0
-    //       }
-    //     }
-    //   ];
 
-    //   const result = await PaymentCollection.aggregate(pipeline).toArray();
-    //   res.send(result)
-
-    // })
 
 
     app.delete('/payment/:id', verifyJWT, async (req, res) => {
@@ -295,6 +262,25 @@ async function run() {
       res.send(result)
 
     })
+
+    app.put('/classes/:id', async (req, res) => {
+      const id = req.params.id;
+      const body = req.body;
+       console.log(id);
+      const filter = { _id: new ObjectId(id) }
+     console.log(filter);
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          Enrolled: body.Enrolled ,
+          seats: body.seats 
+        },
+      };
+      
+      const result = await ClassesCollection.updateOne(filter,updateDoc,options)
+      
+      res.send(result);
+  })
 
     // addmin stated aip 
     app.get('/adminstate', verifyJWT, async (req, res) => {
