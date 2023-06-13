@@ -62,22 +62,25 @@ async function run() {
     //  user relates api 
     const verifyAdmin = async (req, res, next) => {
       const email = req.decoded.email;
+      console.log(req.decoded);
       const query = { email: email }
       const user = await UsersCollection.findOne(query);
+      
       if (user?.role !== 'admin') {
         return res.status(403).send({ error: true, message: 'forbidden message' });
-
       }
       next();
     }
+  
 
     app.get('/users/admin/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       const query = { email: email }
       const user = await UsersCollection.findOne(query);
-      const result = { admin: user?.role === 'admin' }
+      const result = { admin: user?.role =='admin' }
       res.send(result);
     })
+
     app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       const query = { email: email }
@@ -87,7 +90,7 @@ async function run() {
       res.send(result);
     })
 
-    app.delete('/users/:id', async (req, res) => {
+    app.delete('/users/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await UsersCollection.deleteOne(query);
@@ -202,7 +205,7 @@ async function run() {
 
     app.get('/paymentHistory', verifyJWT, async (req, res) => {
       const query = { email: req.query.email };
-      const result = await PaymentCollection.find(query).toArray()
+      const result = await PaymentCollection.find(query).sort({date:1}).toArray();
       res.send(result)
     })
 
@@ -266,9 +269,9 @@ async function run() {
     app.put('/classes/:id', async (req, res) => {
       const id = req.params.id;
       const body = req.body;
-       console.log(id);
+       
       const filter = { _id: new ObjectId(id) }
-     console.log(filter);
+    
       const options = { upsert: true };
       const updateDoc = {
         $set: {
