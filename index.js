@@ -261,7 +261,7 @@ async function run() {
     app.patch('/classes/feedback/:id', verifyJWT, async (req, res) => {
       const id = req.params.id;
       const body=req.body;
-      console.log(body);
+     
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
